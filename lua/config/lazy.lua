@@ -23,15 +23,27 @@ require("lazy").setup({
 	spec = {
 		-- themes
 		{ "catppuccin/nvim", name = "catppuccin" },
-		{ "sainnhe/sonokai" },
+		{
+			"sainnhe/sonokai",
+			lazy = false,
+			config = function()
+				vim.g.gonokai_style = "atlantis"
+				vim.g.sonokai_enable_italic = false
+			end,
+		},
+		{ "projekt0n/github-nvim-theme" },
+		{ "rose-pine/neovim" },
+		{ "folke/tokyonight.nvim" },
 		{ "navarasu/onedark.nvim" },
+		{ "askfiy/visual_studio_code" },
 		{ "jacoborus/tender.vim" },
 		{ "tanvirtin/monokai.nvim" },
+		{ "marko-cerovac/material.nvim" },
 		{ "ellisonleao/gruvbox.nvim" },
 		{ "neanias/everforest-nvim" },
-		{ "ishan9299/nvim-solarized-lua" },
-		{ "projekt0n/github-nvim-theme" },
+		{ "NLKNguyen/papercolor-theme" },
 		{ "Shatur/neovim-ayu" },
+		{ "ishan9299/nvim-solarized-lua" },
 
 		-- lsp manager
 		{ "williamboman/mason.nvim" },
@@ -48,8 +60,8 @@ require("lazy").setup({
 			dependencies = { "rafamadriz/friendly-snippets" },
 		},
 		{ "ray-x/lsp_signature.nvim" },
-		{ "luckasRanarison/tailwind-tools.nvim", lazy = true },
-		{ "brenoprata10/nvim-highlight-colors", lazy = true },
+		{ "luckasRanarison/tailwind-tools.nvim" },
+		{ "brenoprata10/nvim-highlight-colors" },
 
 		-- formatter
 		{ "stevearc/conform.nvim", opts = {} },
@@ -74,6 +86,9 @@ require("lazy").setup({
 		-- diagnostcs finder
 		{ "folke/trouble.nvim" },
 
+		-- file manager
+		-- { "stevearc/oil.nvim" },
+
 		-- todo comments
 		{ "folke/todo-comments.nvim" },
 
@@ -89,22 +104,21 @@ require("lazy").setup({
 			event = "InsertEnter",
 			config = true,
 		},
-		{ "windwp/nvim-ts-autotag", lazy = true },
+		{ "windwp/nvim-ts-autotag" },
 
 		-- file navigation harpoon
 		{
 			"ThePrimeagen/harpoon",
-			branch = "harpoon2",
 		},
 
 		-- pair binds
 		{ "tpope/vim-unimpaired" },
 
 		-- collapse code
-		{ "Wansmer/treesj", lazy = true },
+		{ "Wansmer/treesj" },
 
 		-- better quick fix
-		{ "kevinhwang91/nvim-bqf", lazy = true },
+		{ "kevinhwang91/nvim-bqf" },
 
 		-- surround editing
 		{ "kylechui/nvim-surround" },
@@ -122,8 +136,7 @@ require("lazy").setup({
 			},
 		},
 
-		-- files
-		-- { "stevearc/oil.nvim" },
+		-- neotree
 		{
 			"nvim-neo-tree/neo-tree.nvim",
 			branch = "v3.x",
@@ -139,7 +152,6 @@ require("lazy").setup({
 		{
 			"MeanderingProgrammer/render-markdown.nvim",
 			opts = {},
-			lazy = true,
 		},
 
 		-- status line
@@ -149,18 +161,14 @@ require("lazy").setup({
 		{
 			"xeluxee/competitest.nvim",
 			dependencies = "MunifTanjim/nui.nvim",
-			lazy = true,
 		},
 
+		-- tetris
+		{ "alec-gibson/nvim-tetris" },
+
 		-- git
-		{ "lewis6991/gitsigns.nvim", lazy = true },
-		{ "tpope/vim-fugitive", lazy = true },
-
-		-- startup time
-		{ "dstein64/vim-startuptime" },
-
-		-- make theme
-		{ "rktjmp/lush.nvim" },
+		{ "lewis6991/gitsigns.nvim" },
+		{ "tpope/vim-fugitive" },
 	},
 	install = { colorscheme = { "habamax" } },
 	checker = { enabled = false },
@@ -180,7 +188,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		vim.keymap.set("n", "gh", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
 		-- vim.keymap.set({ "n", "x" }, "<F3>", "<cmd>lua vim.lsp.buf.format({async = true})<cr>", opts)
 		-- vim.keymap.set("n", "<F4>", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
-		vim.keymap.set("n", "L", "<cmd>lua vim.diagnostic.open_float()<cr>", opts)
+		vim.keymap.set("n", "gl", "<cmd>lua vim.diagnostic.open_float()<cr>", opts)
 		vim.keymap.set("n", "[d", "<cmd>lua vim.diagnostic.goto_prev()<cr>", opts)
 		vim.keymap.set("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<cr>", opts)
 	end,
@@ -200,16 +208,17 @@ vim.diagnostic.config({
 	-- 	},
 	-- },
 	signs = {
-		severity = { min = vim.diagnostic.severity.WARN },
+		severity = {
+			min = vim.diagnostic.severity.WARN,
+		},
 	},
 	virtual_lines = false,
-	underline = false,
-	-- underline = {
-	-- 	severity = {
-	-- 		min = vim.diagnostic.severity.WARN,
-	-- 		max = vim.diagnostic.severity.ERROR,
-	-- 	},
-	-- },
+	-- underline = false,
+	underline = {
+		severity = {
+			min = vim.diagnostic.severity.WARN,
+		},
+	},
 	update_in_insert = false,
 	float = { border = "rounded" },
 })
@@ -223,29 +232,11 @@ require("tailwind-tools").setup({})
 ----------------------------------------------mason setup--------------------------------------------------
 require("mason").setup({})
 require("mason-lspconfig").setup({
-	ensure_installed = {
-		"pyright",
-		"lua_ls",
-		"ts_ls",
-		"html",
-		"cssls",
-		"jdtls",
-		"clangd",
-	},
+	ensure_installed = {},
 	handlers = {
 		function(server_name)
 			require("lspconfig")[server_name].setup({})
 		end,
-	},
-})
-
-require("lspconfig").pyright.setup({
-	settings = {
-		python = {
-			analysis = {
-				typeCheckingMode = "off",
-			},
-		},
 	},
 })
 
@@ -273,7 +264,7 @@ cmp.setup({
 		["<C-e>"] = cmp.config.disable,
 		["<Tab>"] = cmp.mapping.confirm({ select = true }),
 		["<C-Space>"] = cmp.mapping.complete(),
-		["<C-l>"] = cmp.mapping.select_next_item(),
+		["<C-j>"] = cmp.mapping.select_next_item(),
 	},
 	window = {
 		completion = cmp.config.window.bordered(),
@@ -302,17 +293,16 @@ require("lsp_signature").setup({
 
 -------------------------------------------tree-sitter setup--------------------------------------------
 require("nvim-treesitter.configs").setup({
-	ensure_installed = { "c", "cpp", "lua", "vim", "vimdoc", "query", "markdown", "markdown_inline", "java" },
+	ensure_installed = { "c", "cpp", "lua", "vim", "vimdoc", "query", "markdown", "markdown_inline" },
 	sync_install = false,
 	auto_install = true,
 	highlight = {
 		enable = true,
 	},
 	indent = {
-		enable = false,
+		enable = true,
 	},
 })
--- vim.api.nvim_set_hl(0, "@variable.parameter", { link = "Identifier" })
 
 require("treesitter-context").setup({
 	max_lines = 2,
@@ -358,6 +348,17 @@ require("Comment").setup({
 	},
 })
 
+-------------------------------------------file manager setup--------------------------------------------
+-- local oil = require("oil")
+-- oil.setup({
+-- 	view_options = {
+-- 		show_hidden = true,
+-- 	},
+-- 	skip_confirm_for_simple_edits = true,
+-- })
+--
+-- vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+
 -------------------------------------------fuzzy finder setup--------------------------------------------
 local telescope = require("telescope")
 telescope.setup({
@@ -367,7 +368,7 @@ telescope.setup({
 				width = 0.90,
 				height = 0.95,
 				preview_cutoff = 0,
-				preview_width = 0.7,
+				preview_width = 0.55,
 			},
 		},
 		file_ignore_patterns = {
@@ -381,9 +382,8 @@ telescope.setup({
 
 local builtin = require("telescope.builtin")
 local utils = require("telescope.utils")
-vim.keymap.set("n", ";d", builtin.buffers)
-vim.keymap.set("n", ";f", builtin.find_files)
-vim.keymap.set("n", ";g", builtin.live_grep)
+vim.keymap.set("n", "<leader>f", builtin.find_files)
+vim.keymap.set("n", "<leader>g", builtin.live_grep)
 
 require("trouble").setup({
 	win = {
@@ -395,11 +395,10 @@ require("trouble").setup({
 			max = vim.diagnostic.severity.ERROR,
 		},
 	},
-	update_in_insert = true,
 })
 
-vim.keymap.set("n", "<leader>t", "<cmd>Trouble diagnostics toggle<CR>")
-vim.keymap.set("n", "<leader>f", "copen 8")
+vim.keymap.set("n", "<leader>we", "<cmd>Trouble diagnostics toggle<CR>")
+vim.keymap.set("n", "<leader>wq", "copen 8")
 -------------------------------------------todo setup--------------------------------------------
 local todo = require("todo-comments").setup({
 	signs = false,
@@ -466,44 +465,29 @@ require("nvim-ts-autotag").setup({
 })
 
 -------------------------------------------harpoon setup--------------------------------------------
-local harpoon = require("harpoon")
-
-harpoon.setup({})
-
-vim.keymap.set("n", ";a", function()
-	harpoon:list():add()
-end)
-vim.keymap.set("n", ";w", function()
-	harpoon.ui:toggle_quick_menu(harpoon:list())
-end)
-
-vim.keymap.set("n", ";1", function()
-	harpoon:list():select(1)
-end)
-vim.keymap.set("n", ";2", function()
-	harpoon:list():select(2)
-end)
-vim.keymap.set("n", ";3", function()
-	harpoon:list():select(3)
-end)
-vim.keymap.set("n", ";4", function()
-	harpoon:list():select(4)
-end)
-
--- Toggle previous & next buffers stored within Harpoon list
-vim.keymap.set("n", ";q", function()
-	harpoon:list():prev()
-end)
-vim.keymap.set("n", ";e", function()
-	harpoon:list():next()
-end)
-
+local harpoon = require("harpoon").setup({
+    tabline = true,
+})
+local harpoonUI = require("harpoon.ui")
+local harpoonMark = require("harpoon.mark")
+vim.keymap.set("n", ";a", harpoonMark.add_file)
+vim.keymap.set("n", ";q", harpoonUI.nav_prev)
+vim.keymap.set("n", ";e", harpoonUI.nav_next)
+vim.keymap.set("n", ";w", harpoonUI.toggle_quick_menu)
+for i = 1, 9 do
+    vim.keymap.set("n", ";" .. i, function()
+        harpoonUI.nav_file(i)
+    end)
+end
 -------------------------------------------collapse setup--------------------------------------------
 local tsj = require("treesj")
 tsj.setup({
 	use_default_keymaps = false,
 })
-vim.keymap.set("n", "<C-e>", tsj.toggle)
+vim.keymap.set("n", "<C-j>", tsj.toggle)
+vim.keymap.set("n", "<leader>j", function()
+	tsj.toggle({ split = { recursive = true } })
+end)
 -------------------------------------------better quick fix setup--------------------------------------------
 require("bqf").setup({})
 
@@ -563,7 +547,7 @@ vim.keymap.set("n", ";s", function()
 	require("persistence").load()
 end)
 
--------------------------------------------file manager setup--------------------------------------------
+-------------------------------------------neotree setup--------------------------------------------
 local neotree = require("neo-tree")
 neotree.setup({
 	filesystem = {
@@ -573,7 +557,7 @@ neotree.setup({
 		},
 	},
 })
-vim.keymap.set("n", "-", ":Neotree toggle float reveal<CR>", { silent = true })
+vim.keymap.set("n", "-", ":Neotree toggle position=current reveal<CR>", { silent = true })
 -------------------------------------------render setup--------------------------------------------
 require("render-markdown").setup({})
 
@@ -614,17 +598,73 @@ require("competitest").setup({
 		},
 	},
 })
-vim.keymap.set("n", "<leader>q", ":CompetiTest run<CR>")
-vim.keymap.set("n", "<leader>r", ":CompetiTest receive testcases<CR>")
-vim.keymap.set("n", "<leader>e", ":CompetiTest edit_testcase <CR>")
+vim.keymap.set("n", "<leader>eq", ":CompetiTest run<CR>")
+vim.keymap.set("n", "<leader>ew", ":CompetiTest receive testcases<CR>")
 
+-------------------------------------------status line setup--------------------------------------------
+require("lualine").setup({
+	options = {
+		theme = "gruvbox-material",
+	},
+	sections = {
+		lualine_a = { "mode" },
+		lualine_b = { { "filename", path = 1 } },
+		lualine_c = { "diagnostics" },
+		lualine_x = { "filetype" },
+		lualine_y = { "progress" },
+		lualine_z = { "location" },
+	},
+})
 -------------------------------------------git setup--------------------------------------------
-require("gitsigns").setup({
-	current_line_blame = true,
+require("gitsigns").setup({})
+-------------------------------------------theme setup--------------------------------------------
+require("tokyonight").setup({
+	style = "storm", -- "night" or "storm"
+	on_highlights = function(hl, c)
+		hl.DiagnosticUnderlineWarn.undercurl = nil
+		hl.DiagnosticUnderlineWarn.underline = true
+		hl.DiagnosticUnderlineError.undercurl = nil
+		hl.DiagnosticUnderlineError.underline = true
+		hl.DiagnosticUnderlineHint.undercurl = nil
+		hl.DiagnosticUnderlineHint.underline = true
+	end,
+})
+require("visual_studio_code").setup({
+	mode = "light", -- light | dark
 })
 
--------------------------------------------theme setup--------------------------------------------
+require("onedark").setup({
+	highlights = {
+		["@operator"] = { fg = "#89BEFA" },
+	},
+	diagnostics = {
+		undercurl = false,
+	},
+})
 
 require("everforest").setup({
 	background = "hard",
+})
+
+--remove italics always
+vim.api.nvim_create_autocmd("ColorScheme", {
+	pattern = "*",
+	callback = function()
+		-- Remove italic from all highlight groups
+		for _, group in ipairs(vim.fn.getcompletion("", "highlight")) do
+			local highlight = vim.api.nvim_get_hl_by_name(group, true)
+			if highlight and highlight.italic then
+				highlight.italic = nil
+				vim.api.nvim_set_hl(0, group, highlight)
+			end
+		end
+	end,
+})
+
+--dont change cursor color on themes
+vim.api.nvim_create_autocmd("ColorScheme", {
+	pattern = "*",
+	callback = function()
+		vim.cmd("highlight Cursor guifg=NONE guibg=NONE")
+	end,
 })

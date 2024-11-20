@@ -14,15 +14,14 @@ vim.o.termguicolors = true
 vim.o.signcolumn = "yes"
 vim.o.showmode = false
 vim.o.undofile = true
-vim.lsp.set_log_level("off")
 
 -- cursor
 vim.opt.guicursor = "n-v-i-c:block-Cursor"
 
 -- indent
 -- Default to 4 spaces per tab
-vim.o.tabstop = 4
-vim.o.shiftwidth = 4
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
 vim.o.expandtab = true
 
 -- Use 2 spaces per tab for HTML, CSS, and JavaScript
@@ -34,12 +33,22 @@ vim.api.nvim_create_autocmd("FileType", {
 -- windows
 vim.o.splitbelow = true
 vim.o.splitright = true
+vim.keymap.set("n", "<C-w>,", ":resize 5<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-w>.", ":resize 10<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-w>m", ":resize<CR>", { noremap = true, silent = true })
 
 -- misc
+function toggleLightDark()
+	if vim.o.background == "dark" then
+		vim.o.background = "light"
+	else
+		vim.o.background = "dark"
+	end
+end
 
+vim.keymap.set("n", "<leader>wr", toggleLightDark)
 vim.keymap.set("i", "<C-c>", "<ESC>", { noremap = true, silent = true })
 vim.keymap.set("n", ";r", "<C-^>", { noremap = true, silent = true })
-vim.keymap.set("n", "_", ":e!<CR>", { noremap = true, silent = true })
 
 function toggleQF()
 	local isOpen = false
@@ -96,77 +105,11 @@ vim.keymap.set("v", "<", "<gv", { noremap = true, silent = true })
 --color
 vim.cmd.colorscheme("monokai")
 
--- if exists fg, then preserve it when changing
-local function setBG(group, bg_color)
-	local current_hl = vim.api.nvim_get_hl_by_name(group, true)
-	local fg_color = current_hl.foreground or "NONE"
-	vim.api.nvim_set_hl(0, group, { fg = fg_color, bg = bg_color })
-end
-
+-- theme changes
 local function themeChanges()
-	-- set highlight orange
-	vim.api.nvim_set_hl(0, "Visual", { bg = "#335E5E", blend = 80 })
-	vim.api.nvim_set_hl(0, "VisualNOS", { bg = "#335E5E", blend = 80 })
-
-	local theme
-	if vim.opt.background:get() == "light" then
-		-- vim.api.nvim_set_hl(0, "LineNr", { fg = "#EDEDED" })
-		setBG("SignColumn", "#FFFFFF")
-		setBG("Normal", "#FFFFFF")
-		setBG("CursorLine", "#F7F7F7")
-		setBG("TelescopeSelection", "#EDEDED")
-		theme = "iceberg_light"
-	else
-		vim.api.nvim_set_hl(0, "LineNr", { fg = "#47494C" })
-		setBG("SignColumn", "#27292C")
-		setBG("Normal", "#27292C")
-		setBG("CursorLine", "#2f323b")
-		setBG("TelescopeSelection", "#3a3d45")
-		theme = "iceberg_dark"
-	end
-	vim.api.nvim_set_hl(0, "@variable.parameter", { link = "Variable" })
-
-	require("lualine").setup({
-		options = {
-			theme = theme,
-		},
-		sections = {
-			lualine_a = { "mode" },
-			lualine_b = { { "filename", path = 1 } },
-			lualine_c = { "diagnostics" },
-			lualine_x = { "filetype" },
-			lualine_y = { "progress" },
-			lualine_z = { "location" },
-		},
-	})
-
-	-- parenthesis hl
-	-- setBG("MatchParen", "FFD700")
-	vim.api.nvim_set_hl(0, "MatchParen", { bg = "#FFD700", fg = "#000000" })
-
-	-- set cursor to default terminal
-	vim.cmd("highlight Cursor guifg=NONE guibg=NONE")
-
-	-- Remove italic from all highlight groups
-	for _, group in ipairs(vim.fn.getcompletion("", "highlight")) do
-		local highlight = vim.api.nvim_get_hl_by_name(group, true)
-		if highlight and highlight.italic then
-			highlight.italic = nil
-			vim.api.nvim_set_hl(0, group, highlight)
-		end
-	end
+	vim.api.nvim_set_hl(0, "Visual", { bg = "#FFA500", blend = 80 }) -- Softer blue background with a slight transparency
+	vim.api.nvim_set_hl(0, "VisualNOS", { bg = "#FFA500", blend = 80 }) -- Softer blue background with a slight transparency
 end
-
-function toggleLightDark()
-	if vim.o.background == "dark" then
-		vim.o.background = "light"
-	else
-		vim.o.background = "dark"
-	end
-	themeChanges()
-end
-
-vim.keymap.set("n", "<leader>wr", toggleLightDark)
 
 vim.api.nvim_create_autocmd("Colorscheme", { callback = themeChanges })
 themeChanges()
